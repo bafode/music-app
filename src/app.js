@@ -8,6 +8,7 @@ const hostname = "0.0.0.0";
 let port = 3000
 
 
+
 dotenv.config()
 
 const server = express();
@@ -20,6 +21,9 @@ server.use(express.urlencoded({extended:true}));
 
 const userRoute = require("./api/routes/userRoute");
 userRoute(server);
+
+const musicRoute = require("./api/routes/musicRoute");
+musicRoute(server);
 
 const swaggerOptions = {
     definition: {

@@ -17,7 +17,7 @@ services:
         links:
             - mongo
     mongo:
-        container_name: project-api-db
+        container_name: music-api-db
         image: mongo
         ports:
             - "27017:27017"
