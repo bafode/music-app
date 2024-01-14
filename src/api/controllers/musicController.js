@@ -74,3 +74,50 @@ exports.deleteMusic =asyncHandler(
          }
         }
 ) 
+
+
+exports.createMusicVote =asyncHandler(
+    async (req, res) => {
+
+        const { rating, comment } = req.body
+
+  const music = await Music.findById(req.params.id)
+
+  if (music) {
+    const alreadyVoted = music.votes.find(
+      (v) => v.user.toString() === req.user._id.toString()
+    )
+
+    if (alreadyVoted) {
+      res.status(400)
+      throw new Error('you have already voted for this music')
+    }
+
+    const review = {
+      name: req.user.name,
+      rating: Number(rating),
+      comment,
+      user: req.user._id,
+    }
+
+    music.votes.push(review)
+
+    music.numVote = music.votes.length
+
+    music.rating =
+      music.votes.reduce((acc, item) => item.rating + acc, 0) /
+      music.votes.length
+
+    await music.save()
+    res.status(201).json({ message: 'vote added' })
+  } else {
+    res.status(404)
+    throw new Error('music not found')
+  }
+}) 
+
+
+exports.topMusics = asyncHandler(async (req, res) => {
+    const musics = await Music.find({}).sort({ rating: -1 }).limit(20)
+    res.json(musics)
+  })
