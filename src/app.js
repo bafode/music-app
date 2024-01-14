@@ -1,5 +1,6 @@
 const express = require('express');
 const dotenv=require('dotenv')
+const morgan=require('morgan')
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
 
@@ -15,6 +16,10 @@ const server = express();
 
 const mongoose = require("mongoose");
 mongoose.connect("mongodb://mongo/music-api-node");
+
+if (process.env.NODE_ENV === 'development') {
+  server.use(morgan('dev'))
+}
 
 server.use(express.json());
 server.use(express.urlencoded({extended:true}));
