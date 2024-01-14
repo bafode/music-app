@@ -22,6 +22,9 @@ server.use(express.urlencoded({extended:true}));
 const userRoute = require("./api/routes/userRoute");
 userRoute(server);
 
+const sessionRoute = require("./api/routes/sessionRoute");
+sessionRoute(server);
+
 const musicRoute = require("./api/routes/musicRoute");
 musicRoute(server);
 
