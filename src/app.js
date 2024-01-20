@@ -1,12 +1,13 @@
 const express = require('express');
 const dotenv=require('dotenv')
 const morgan=require('morgan')
+const cors=require('cors')
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
 
 
 const hostname = "0.0.0.0";
-let port = 3000
+let port = 5000
 
 
 
@@ -21,6 +22,7 @@ if (process.env.NODE_ENV === 'development') {
   server.use(morgan('dev'))
 }
 
+server.use(cors())
 server.use(express.json());
 server.use(express.urlencoded({extended:true}));
 
@@ -56,7 +58,7 @@ const swaggerOptions = {
       },
       servers: [
         {
-          url: 'http://localhost:3000',
+          url: 'http://localhost:5000',
         },
       ],
     },
