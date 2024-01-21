@@ -141,10 +141,10 @@ const getSpotifyAccessToken = asyncHandler(async () => {
       },
     };
   
-    const body = new URLSearchParams({
+    const body ={
       grant_type: "client_credentials",
       redirect_uri: 'http://localhost:5000/callback',
-    });
+    };
   
     try {
       const { data } = await axios.post(url, body, config);
