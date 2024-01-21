@@ -9,6 +9,8 @@ module.exports = (server) => {
 
     server.route('/musics/top').get(musicController.topMusics)
 
+    server.route("/spotify").get(musicController.getMusicFromSpotify)
+
     server.route("/musics/:id")
     .all(authMiddleware.protect)
     .get(musicController.getMusic)

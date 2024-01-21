@@ -1,4 +1,5 @@
 const asyncHandler = require('express-async-handler')
+const axios =require("axios")
 const Music = require("../models/musicModel");
 
 exports.listAllMusic =asyncHandler(
@@ -121,3 +122,56 @@ exports.topMusics = asyncHandler(async (req, res) => {
     const musics = await Music.find({}).sort({ rating: -1 }).limit(20)
     res.json(musics)
   })
+
+
+
+const getSpotifyAccessToken = asyncHandler(async () => {
+    const client_id = process.env.SPOTIFY_CLIENT_ID;
+    const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
+  
+    const url = 'https://accounts.spotify.com/api/token';
+    const config = {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization:
+          'Basic ' +
+          Buffer.from(
+           client_id + ':' + client_secret
+          ).toString('base64'),
+      },
+    };
+  
+    const body = new URLSearchParams({
+      grant_type: "client_credentials",
+      redirect_uri: 'http://localhost:5000/callback',
+    });
+  
+    try {
+      const { data } = await axios.post(url, body, config);
+      return data
+    } catch (error) {
+      console.error('Error fetching token from Spotify:', error.message);
+    }
+  });
+
+  
+  exports.getMusicFromSpotify = asyncHandler(async (req, res) => {
+    const query=req.query.search
+    const url=`https://api.spotify.com/v1/search?q=${query}&type=track&limit=10`
+    const token=await getSpotifyAccessToken()
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token.access_token}`,
+      },
+    }
+
+    const { data } = await axios.get(url, config)
+    const results=data.tracks.items.map((t)=>{
+      return{
+        title:t.name,
+        artist:t.artists.map((a)=>a.name),
+        link:t.preview_url
+      }
+    })
+    res.status(200).json({results})
+  });
