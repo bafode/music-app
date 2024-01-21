@@ -129,7 +129,7 @@ const getSpotifyAccessToken = asyncHandler(async () => {
     const client_id = process.env.SPOTIFY_CLIENT_ID;
     const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
   
-    const url = 'https://accounts.spotify.com/api/token';
+    const url = process.env.SPOTIFY_ACCESS_TOKEN_URL;
     const config = {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -143,7 +143,7 @@ const getSpotifyAccessToken = asyncHandler(async () => {
   
     const body ={
       grant_type: "client_credentials",
-      redirect_uri: 'http://localhost:5000/callback',
+      redirect_uri: process.env.SPOTIFY_REDIRECT_URL,
     };
   
     try {
@@ -157,7 +157,7 @@ const getSpotifyAccessToken = asyncHandler(async () => {
   
   exports.getMusicFromSpotify = asyncHandler(async (req, res) => {
     const query=req.query.search
-    const url=`https://api.spotify.com/v1/search?q=${query}&type=track&limit=10`
+    const url=`${process.env.SPOTIFY_SEARCH_ENDPOINT}?q=${query}&type=track&limit=10`
     const token=await getSpotifyAccessToken()
     const config = {
       headers: {

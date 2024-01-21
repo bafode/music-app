@@ -7,7 +7,7 @@ const swaggerJsDoc = require('swagger-jsdoc');
 
 
 const hostname = "0.0.0.0";
-let port = 5000
+let port = process.env.PORT||5000
 
 
 
