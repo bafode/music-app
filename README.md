@@ -1,4 +1,4 @@
-# Music App nodeJS simple API REST
+#NodeJS simple API REST
 
 ## Launch
 ```

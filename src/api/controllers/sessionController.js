@@ -16,14 +16,19 @@ exports.listAllSessions =asyncHandler(
 exports.createASession =asyncHandler(
     async (req, res) => {
         const {moduleName,expirationDate}=req.body
+
+        const session=await Session.findOne({moduleName:moduleName})
+        if (session) {
+          res.status(400)
+          throw new Error('Session Already Exist')
+        }
         const newSession = new Session({
            moduleName:moduleName,
            expirationDate:expirationDate
         });
         
         const createdSession = await newSession.save();
-        res.status(201);
-        res.json(createdSession);
+        res.status(201).json(createdSession)
         
     }
 )
