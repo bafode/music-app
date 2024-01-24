@@ -3,9 +3,8 @@ module.exports = (server) => {
     const authMiddleware=require("../middleware/authMiddleware")
     
     server.route("/musics")
-    .all(authMiddleware.protect)
     .get(musicController.listAllMusic)
-    .post(musicController.createAMusiic);
+    .post(authMiddleware.protect,musicController.createAMusiic);
 
     server.route('/musics/top').get(musicController.topMusics)
 

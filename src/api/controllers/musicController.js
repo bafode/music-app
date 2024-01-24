@@ -4,8 +4,26 @@ const Music = require("../models/musicModel");
 
 exports.listAllMusic =asyncHandler(
     async(req, res) => {
-        const musics = await Music.find({})     
-        res.status(200).json(musics);
+
+      const pageSize = 10
+      const page = Number(req.query.pageNumber) || 1
+    
+      const keyword = req.query.keyword
+        ? {
+            name: {
+              $regex: req.query.keyword,
+              $options: 'i',
+            },
+          }
+        : {}
+
+        const count = await Music.countDocuments({ ...keyword })
+        
+        const musics = await Music.find({})
+        .limit(pageSize)
+        .skip(pageSize * (page - 1))  
+        
+        res.json({ musics, page, pages: Math.ceil(count / pageSize) })
     
         }) 
 
