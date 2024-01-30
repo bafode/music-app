@@ -7,19 +7,20 @@ exports.listAllMusic =asyncHandler(
 
       const pageSize = 10
       const page = Number(req.query.pageNumber) || 1
-    
-      const keyword = req.query.keyword
-        ? {
-            name: {
-              $regex: req.query.keyword,
-              $options: 'i',
-            },
-          }
-        : {}
 
-        const count = await Music.countDocuments({ ...keyword })
+      const query = {};
+      if(req.query.search) {
+        query.title = { $regex: req.query.search, $options: 'i' };
+      }
+      if (req.query.session && req.query.session != 'All') {
+        query.session = req.query.session;
+      }  
+
+        const count = await Music.countDocuments(query)
         
-        const musics = await Music.find({})
+        console.log(query)
+        const musics = await Music.find(query)
+        .sort({ rating: -1 })
         .limit(pageSize)
         .skip(pageSize * (page - 1))  
         
@@ -33,10 +34,13 @@ exports.createAMusiic =asyncHandler(
         const newMusic = new Music({
             title:title,
             artist:artist,
-            link:link
+            link:link,
         });
         
         const createdMusic = await newMusic.save();
+        if(!createdMusic){
+          res.status(500).json({message:"internal server error"})
+        }
         res.status(201);
         res.json(createdMusic);
         
@@ -108,8 +112,7 @@ exports.createMusicVote =asyncHandler(
     )
 
     if (alreadyVoted) {
-      res.status(400)
-      throw new Error('you have already voted for this music')
+      res.status(400).json({message: 'you have already voted for this music'})   
     }
 
     const review = {
@@ -184,6 +187,9 @@ const getSpotifyAccessToken = asyncHandler(async () => {
     }
 
     const { data } = await axios.get(url, config)
+    if(!data){
+      res.status(500).json({message:"Error occured while fetching music from spotify api"})
+    }
     const results=data.tracks.items.map((t)=>{
       return{
         title:t.name,

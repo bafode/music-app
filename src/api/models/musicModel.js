@@ -23,10 +23,7 @@ let musicSchema = new Schema({
         type: String,
         required: true
     },
-    artist: [{
-        type: String,
-        required: 'Le contenu est requis'
-    }],
+    artist: [String],
     link: {
         type: String,
         required: 'Le contenu est requis'

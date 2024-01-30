@@ -3,12 +3,14 @@ const Session = require("../models/sessionModel");
 
 exports.listAllSessions =asyncHandler(
     async(req, res) => {
-        const sessions = await Session.find({}).populate(
+        const sessions = await Session.find({})
+        .sort({ createdAt: -1 })
+        .populate(
             {
                 path:'musics',
                 model:'Music'
             }
-            );     
+            )
         res.status(200).json(sessions);
     
         }) 
@@ -58,6 +60,7 @@ exports.addMusicToASession =asyncHandler(
             musicId
            } = req.body
          
+           console.log(req.body)
            const session = await Session.findById(req.params.id)
 
            if (session) {
@@ -66,8 +69,7 @@ exports.addMusicToASession =asyncHandler(
             )
         
             if (alreadyAdded) {
-              res.status(400)
-              throw new Error('Music already added')
+              res.status(400).json({message:"Music already added"})
             }
     
             session.musics.push(musicId)
@@ -76,8 +78,7 @@ exports.addMusicToASession =asyncHandler(
             await session.save()
             res.status(201).json({ message: 'Music added added' })
           } else {
-            res.status(404)
-            throw new Error('Session not found')
+            res.status(404).json({message:"Session not found"})
           }
         }   
 )

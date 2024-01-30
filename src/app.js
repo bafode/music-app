@@ -1,9 +1,13 @@
 const express = require('express');
 const dotenv=require('dotenv')
 const morgan=require('morgan')
+const colors=require('colors')
 const cors=require('cors')
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
+var cron = require('node-cron');
+
+
 
 
 const hostname = "0.0.0.0";
@@ -22,6 +26,17 @@ if (process.env.NODE_ENV === 'development') {
   server.use(morgan('dev'))
 }
 
+cron.schedule('* * * * *', async () => {
+  console.log('running expired sessionjob every minute'.yellow);
+  try {
+    const currentDate = new Date();
+    await sessionModel.deleteMany({ expirationDate: { $lt: currentDate } });
+    console.log('Expired sessions deleted successfully.'.green);
+  } catch (error) {
+    console.error('Error deleting expired sessions:'.red, error);
+  }
+});
+
 server.use(cors())
 server.use(express.json());
 server.use(express.urlencoded({extended:true}));
@@ -33,6 +48,7 @@ const sessionRoute = require("./api/routes/sessionRoute");
 sessionRoute(server);
 
 const musicRoute = require("./api/routes/musicRoute");
+const sessionModel = require('./api/models/sessionModel');
 musicRoute(server);
 
 const swaggerOptions = {
