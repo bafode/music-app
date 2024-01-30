@@ -24,8 +24,8 @@ module.exports = (server) => {
 /**
  * @swagger
  * tags:
- *   name: Sessions
- *   description: Operations related to sessions
+ *   name: Musics
+ *   description: Operations related to Musics
  */
 /**
  * @swagger

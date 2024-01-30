@@ -21,8 +21,8 @@ exports.createASession =asyncHandler(
 
         const session=await Session.findOne({moduleName:moduleName})
         if (session) {
-          res.status(400)
-          throw new Error('Session Already Exist')
+          res.status(400).json({message:'Session Already Exist'})
+         
         }
         const newSession = new Session({
            moduleName:moduleName,

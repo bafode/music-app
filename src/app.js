@@ -27,7 +27,6 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 cron.schedule('* * * * *', async () => {
-  console.log('running expired sessionjob every minute'.yellow);
   try {
     const currentDate = new Date();
     await sessionModel.deleteMany({ expirationDate: { $lt: currentDate } });
