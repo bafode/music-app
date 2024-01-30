@@ -1,44 +1,35 @@
-const mongoose=require('mongoose');
-const bcrypt=require('bcryptjs')
-const faker=require('faker');
-const User = require("../../api/models/userModel");
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+const User = require('../../api/models/userModel');
+
+const generateHashedPassword = (password) => {
+  const salt = bcrypt.genSaltSync(8);
+  return bcrypt.hashSync(password, salt);
+};
 
 const password = 'password1';
-const salt = bcrypt.genSaltSync(8);
-const hashedPassword = bcrypt.hashSync(password, salt);
 
-const userOne = {
-  _id: new mongoose.Types.ObjectId(),
-  name: faker.name.firstName(),
-  email: faker.internet.email().toLowerCase(),
-  isAdmin: false,
-  password,
-};
-
-const userTwo = {
+const generateUser = (isAdmin = false) => {
+  return {
     _id: new mongoose.Types.ObjectId(),
-    name: faker.name.firstName(),
-    email: faker.internet.email().toLowerCase(),
-    isAdmin: false,
-    password,
+    name: 'Test', 
+    email: isAdmin ? 'admin@example.com' : 'user@example.com', 
+    isAdmin,
+    password: generateHashedPassword(password),
+  };
 };
 
-const admin = {
-    _id: new mongoose.Types.ObjectId(),
-    name: faker.name.firstName(),
-    email: faker.internet.email().toLowerCase(),
-    isAdmin: true,
-    password,
-};
+const userOne = generateUser();
+const userTwo = generateUser();
+const admin = generateUser(true);
 
 const insertUsers = async (users) => {
-  await User.insertMany(users.map((user) => ({ ...user, password: hashedPassword })));
+  await User.insertMany(users.map((user) => ({ ...user })));
 };
 
 module.exports = {
-    userOne,
-    userTwo,
-    admin,
-    hashedPassword,
-    insertUsers,
-  };
+  userOne,
+  userTwo,
+  admin,
+  insertUsers,
+};

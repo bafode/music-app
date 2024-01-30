@@ -1,73 +1,79 @@
 const express = require('express');
-const dotenv=require('dotenv')
-const morgan=require('morgan')
-const cors=require('cors')
+const dotenv = require('dotenv');
+const morgan = require('morgan');
+const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
 
+dotenv.config();
 
-const hostname = "0.0.0.0";
-let port = process.env.PORT||5000
+const app = express();
+const port = process.env.PORT || 5000;
 
+// MongoDB connection
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://mongo/music-api-node', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
-
-dotenv.config()
-
-const server = express();
-
-const mongoose = require("mongoose");
-mongoose.connect("mongodb://mongo/music-api-node");
-
+// Middleware
 if (process.env.NODE_ENV === 'development') {
-  server.use(morgan('dev'))
+  app.use(morgan('dev'));
 }
 
-server.use(cors())
-server.use(express.json());
-server.use(express.urlencoded({extended:true}));
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-const userRoute = require("./api/routes/userRoute");
-userRoute(server);
+// Routes
+const userRoute = require('./api/routes/userRoute');
+const sessionRoute = require('./api/routes/sessionRoute');
+const musicRoute = require('./api/routes/musicRoute');
 
-const sessionRoute = require("./api/routes/sessionRoute");
-sessionRoute(server);
+userRoute(app);
+sessionRoute(app);
+musicRoute(app);
 
-const musicRoute = require("./api/routes/musicRoute");
-musicRoute(server);
-
+// Swagger Documentation
 const swaggerOptions = {
-    definition: {
-      openapi: '3.0.0',
-      info: {
-        title: 'NODEJS API',
-        version: '1.0.0',
-        description: 'A sample API for learning nodejs',
-      },
-      components: {
-        securityDefinitions: {
-            bearerAuth: {
-                type: 'apiKey',
-                name: 'Authorization',
-                scheme: 'bearer',
-                in: 'header',
-            },
-        }
-      },
-      security: {
-        bearerAuth: [],
-      },
-      servers: [
-        {
-          url: 'http://localhost:5000',
-        },
-      ],
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'NODEJS API',
+      version: '1.0.0',
+      description: 'A sample API for learning Node.js',
     },
-    apis: ['./api/routes/*.js'],
-  };
-  
-const swaggerDocs = swaggerJsDoc(swaggerOptions);
-server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+    components: {
+      securityDefinitions: {
+        bearerAuth: {
+          type: 'apiKey',
+          name: 'Authorization',
+          scheme: 'bearer',
+          in: 'header',
+        },
+      },
+    },
+    security: {
+      bearerAuth: [],
+    },
+    servers: [
+      {
+        url: `http://localhost:${port}`,
+      },
+    ],
+  },
+  apis: ['./api/routes/*.js'],
+};
 
-server.listen(port, hostname, () => {
-    console.log(`Example app listening on port ${port}`)
-})
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+
+if (require.main === module) {
+  app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+  });
+}
+
+module.exports = app;
