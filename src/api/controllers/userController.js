@@ -26,10 +26,16 @@ exports.login = asyncHandler(async (req, res) => {
 exports.registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body
 
+  if (!name || !email || !password) {
+    res.status(400).json({ message: 'Incomplete user data' });
+    return;
+  }
+
   const userExists = await User.findOne({ email })
 
   if (userExists) {
-    res.status(400).json({message: 'User already exists'})
+    res.status(400).json({ message: 'User already exists' })
+    return;
   }
 
   const user = await User.create({ 
@@ -47,9 +53,10 @@ exports.registerUser = asyncHandler(async (req, res) => {
       token: generateToken(user._id),
     })
   } else {
-    res.status(400).json({message: 'Invalid user data'})
+    res.status(500).json({ message: 'Server error' });
   }
 })
+
 
 
 exports.getUserProfile = asyncHandler(async (req, res) => {
