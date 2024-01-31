@@ -47,8 +47,7 @@ exports.getSession =asyncHandler(
         if (session) {
             res.status(200).json(session)
         } else {
-            res.status(404)
-            throw new Error('Session not found')
+            res.status(404).json({message: 'Session not found' })
         }  
     }
 ) 
@@ -91,8 +90,7 @@ exports.deleteSession =asyncHandler(
            await Session.findByIdAndDelete(req.params.id)
            res.json({ message: 'Session removed' })
          } else {
-           res.status(404)
-           throw new Error('Session not found')
+           res.status(404).json({ message: 'Session not found' })
          }
         }
 ) 

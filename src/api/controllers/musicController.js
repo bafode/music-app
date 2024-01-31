@@ -54,8 +54,7 @@ exports.getMusic =asyncHandler(
         if (music) {
             res.status(200).json(music)
         } else {
-            res.status(404)
-            throw new Error('Music not found')
+            res.status(404).json({message:'Music not found'})
         }  
     }
 ) 
@@ -71,8 +70,7 @@ exports.updateMusic =asyncHandler(
          
            const music = await Music.findById(req.params.id)
            if(!music){
-            res.status(404)
-            throw new Error('Music not found')
+            res.status(404).json({message:'Music not found'})
            }
          
            music.title = title
@@ -90,10 +88,9 @@ exports.deleteMusic =asyncHandler(
          const music = await Music.findById(req.params.id)
          if (music) {
            await Music.findByIdAndDelete(req.params.id)
-           res.json({ message: 'Music removed' })
+           res.status(200).json({ message: 'Music removed' })
          } else {
-           res.status(404)
-           throw new Error('Music not found')
+           res.status(404).json({message:'Music not found'})
          }
         }
 ) 
@@ -133,8 +130,7 @@ exports.createMusicVote =asyncHandler(
     await music.save()
     res.status(201).json({ message: 'vote added' })
   } else {
-    res.status(404)
-    throw new Error('music not found')
+    res.status(404).json({message:'Music not found'})
   }
 }) 
 

@@ -87,8 +87,7 @@ exports.updateUserProfile = asyncHandler(async (req, res) => {
       token: generateToken(updatedUser._id),
     })
   } else {
-    res.status(404)
-    throw new Error('User not found')
+    res.status(404).json({message:'User not found' })
   }
 })
 
@@ -104,8 +103,7 @@ exports.deleteUser = asyncHandler(async (req, res) => {
     await User.findByIdAndDelete(req.params.id)
     res.json({ message: 'User removed' })
   } else {
-    res.status(404)
-    throw new Error('User not found')
+    res.status(404).json({message:'User not found' })
   }
 })
 
@@ -115,8 +113,7 @@ exports.getUserById = asyncHandler(async (req, res) => {
   if (user) {
     res.json(user)
   } else {
-    res.status(404)
-    throw new Error('User not found')
+    res.status(404).json({message:'User not found' })
   }
 })
 
@@ -136,8 +133,7 @@ exports.updateUser = asyncHandler(async (req, res) => {
       isAdmin: updatedUser.isAdmin,
     })
   } else {
-    res.status(404)
-    throw new Error('User not found')
+    res.status(404).json({message:'User not found' })
   }
 })
 
