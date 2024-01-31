@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "faker": "^6.6.6"
+  },
+  "dependencies": {
+    "supertest": "^6.3.4"
+  }
+}
