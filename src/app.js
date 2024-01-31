@@ -44,6 +44,7 @@ app.use(express.urlencoded({extended:true}));
 const userRoute = require('./api/routes/userRoute');
 const sessionRoute = require('./api/routes/sessionRoute');
 const musicRoute = require('./api/routes/musicRoute');
+const sessionModel = require('./api/models/sessionModel');
 
 userRoute(app);
 sessionRoute(app);
