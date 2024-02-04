@@ -32,7 +32,7 @@ cron.schedule('* * * * *', async () => {
     await sessionModel.deleteMany({ expirationDate: { $lt: currentDate } });
     console.log('Expired sessions deleted successfully.'.green);
   } catch (error) {
-    console.error('Error deleting expired sessions:'.red, error);
+    console.log('Error deleting expired sessions:'.red, error);
   }
 });
 
