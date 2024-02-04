@@ -2,7 +2,6 @@ const request = require('supertest');
 const app = require('../../app'); // Update the path accordingly
 const setupTestDB = require('../utils/setupTestDb');
 const { userOne, admin, insertUsers } = require('../utils/user.util');
-const { adminAccessToken, userAccessToken } = require('../utils/tokenUtil');
 const Music = require('../../api/models/musicModel');
 
 setupTestDB();
