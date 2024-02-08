@@ -1,13 +1,13 @@
 const express = require('express');
-const dotenv=require('dotenv')
-const morgan=require('morgan')
-const colors=require('colors')
-const cors=require('cors')
+const dotenv = require('dotenv');
+const morgan = require('morgan');
+const colors = require('colors');
+const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
-var cron = require('node-cron');
-
-
+const cron = require('node-cron');
+const mongoose = require('mongoose');
+const sessionModel = require('./api/models/sessionModel');
 
 dotenv.config();
 
@@ -15,37 +15,39 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // MongoDB connection
-const mongoose = require('mongoose');
 mongoose.connect('mongodb://mongo/music-api-node', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+}).then(() => {
+  console.log('MongoDB connected'.cyan.bold);
+}).catch(err => {
+  console.error('MongoDB connection error:', err.message.red);
+  process.exit(1); // Exit with failure
 });
 
 // Middleware
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
+// Cron job
 cron.schedule('* * * * *', async () => {
   try {
     const currentDate = new Date();
     await sessionModel.deleteMany({ expirationDate: { $lt: currentDate } });
     console.log('Expired sessions deleted successfully.'.green);
   } catch (error) {
-    console.log('Error deleting expired sessions:'.red, error);
+    console.error('Error deleting expired sessions:'.red, error);
   }
 });
-
-app.use(cors())
-app.use(express.json());
-app.use(express.urlencoded({extended:true}));
 
 // Routes
 const userRoute = require('./api/routes/userRoute');
 const sessionRoute = require('./api/routes/sessionRoute');
 const musicRoute = require('./api/routes/musicRoute');
-const sessionModel = require('./api/models/sessionModel');
-
 userRoute(app);
 sessionRoute(app);
 musicRoute(app);
@@ -83,7 +85,6 @@ const swaggerOptions = {
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-
 
 if (require.main === module) {
   app.listen(port, () => {
